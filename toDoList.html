@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            box-sizing: border-box;
+        }
+        body,html{
+            width: 100%;
+            height: 100%;
+            background: #5e5e5e;
+        }
+        .box{
+            width: 100%;
+            height: 100%;
+        }
+        .box > .top{
+            width: 500px;
+            height: 30px;
+            margin: 50px auto 0;
+        }
+        .top > input{
+            width:500px;
+            height: 30px;
+            outline: none;
+            background: #fff;
+            line-height: 20px;
+            padding: 5px  10px;
+            font-size: 18px;
+
+        }
+        .nva{
+            width: 500px;
+            height: auto;
+            margin: 10px auto;
+        }
+        .nva>ul{
+            width: 100%;
+            height: 20px;
+
+        }
+        .nva>ul>li{
+            width: 50px;
+            height: 100%;
+            border-radius: 50px;
+            line-height: 20px;
+            text-align: center;
+            float: right;
+            color: #5e5e5e;
+            font-size: 6px;
+            margin-left: 5px;
+            cursor:pointer;
+            background: #fff;
+        }
+        .centent{
+            width: 500px;
+            margin: auto;
+        }
+        .centent>ul{
+            width: 100%;
+        }
+        .list>li{
+            width: 100%;
+            height: 30px;
+            background: #fff;
+            margin-top: 10px;
+            display: flex;
+            justify-content:space-around;
+            align-items: center;
+            padding: 0 5px;
+
+        }
+        .left{
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 1px solid #5e5e5e;
+            cursor:pointer;
+        }
+        .text{
+            width: 430px;
+            height: 30px;
+            line-height: 30px;
+        }
+        .right{
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            border: 1px solid #5e5e5e;
+            text-align: center;
+            line-height: 15px;
+            cursor:pointer;
+        }
+        .kus{background: red}
+        .bor{
+            border: 1px solid #2e6da4;
+        }
+    </style>
+    <script src="vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="box">
+            <div class="top">
+                <input type="text" v-model="con" placeholder="请输入你想记录的内容" v-on:keyup.13="chang">
+            </div>
+            <div class="nva">
+                <ul class="tyep">
+                    <li @click="show('all')" :class="{bor:status=='all'}">全部</li>
+                    <li @click="show('1')" :class="{bor:status=='1'}">已完成</li>
+                    <li @click="show('0')" :class="{bor:status=='0'}">未完成</li>
+                </ul>
+            </div>
+            <div class="centent">
+                <div>
+                <ul class="list">
+                    <li v-for="item in datas" >
+                        <span class="left" @click="up(item)" :class="{kus:item.stuts==1}"></span>
+                        <div class="text" v-if="flag" @dblclick="text()">{{item.title}}</div>
+                        <input type="text" v-model="item.title" v-else @blur="its()">
+                        <span class="right" @click="del(item.id)">☢</span>
+                    </li>
+                </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    new Vue({
+        el:"#app",
+        data:{
+            all:localStorage.todo?JSON.parse(localStorage.todo):[],
+            con:'',
+            status:"all",
+            flag:true
+        },
+        methods:{
+            chang(){
+                if(this.con) {
+                    obj = {};
+                    obj.title = this.con;
+                    obj.id = Math.random() + new Date().getTime();
+                    obj.stuts = 0;
+                    this.all.push(obj);
+                    localStorage.todo=JSON.stringify(this.all);
+                    this.con = "";
+                }else {
+                    return;
+                }
+            },
+            show(v){
+                this.status=v;
+            },
+            up(v){
+                if(v.stuts==0){
+                    v.stuts=1;
+                }else{
+                    v.stuts=0;
+                }
+                localStorage.todo=JSON.stringify(this.all)
+            },
+            del(v){
+                this.all=this.all.filter(e=>{ return e.id!=v});
+                localStorage.todo=JSON.stringify(this.all)
+            },
+            text(){
+                this.flag=false;
+            },
+            its(){
+                this.flag=!this.flag;
+            }
+
+
+
+        },
+        computed:{
+            datas(){
+            return this.all.filter((e)=>{
+                if(this.status=="all"){
+                    return e;
+                }else {
+                    if (e.stuts==this.status){
+                        return e;
+                    }
+                }
+            })
+            }
+        }
+
+
+    })
+</script>
+</html>
